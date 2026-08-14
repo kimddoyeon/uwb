@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "C:/uwb/dw3000-main/.pio/build/ui1/firmware.elf",
-            "projectEnvName": "ui1",
-            "toolchainBinDir": "C:/Users/LG/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "executable": "C:/Users/dltpd/OneDrive/문서/EEI/2026_상상기업/UWB/uwb-ddoyeon/.pio/build/dm_sstwr_u2/firmware.elf",
+            "projectEnvName": "dm_sstwr_u2",
+            "toolchainBinDir": "C:/Users/dltpd/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,18 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "C:/uwb/dw3000-main/.pio/build/ui1/firmware.elf",
-            "projectEnvName": "ui1",
-            "toolchainBinDir": "C:/Users/LG/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "executable": "C:/Users/dltpd/OneDrive/문서/EEI/2026_상상기업/UWB/uwb-ddoyeon/.pio/build/dm_sstwr_u2/firmware.elf",
+            "projectEnvName": "dm_sstwr_u2",
+            "toolchainBinDir": "C:/Users/dltpd/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "C:/uwb/dw3000-main/.pio/build/ui1/firmware.elf",
-            "projectEnvName": "ui1",
-            "toolchainBinDir": "C:/Users/LG/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "executable": "C:/Users/dltpd/OneDrive/문서/EEI/2026_상상기업/UWB/uwb-ddoyeon/.pio/build/dm_sstwr_u2/firmware.elf",
+            "projectEnvName": "dm_sstwr_u2",
+            "toolchainBinDir": "C:/Users/dltpd/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

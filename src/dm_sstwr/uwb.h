@@ -31,9 +31,10 @@
 #define NODE_E_UID U5
 #define NODE_F_UID U6
 
-// B receives every pair that does not contain B through this node.
-// Change only this UID when the report gateway changes.
-#define REPORT_GATEWAY_UID NODE_E_UID
+// B is always the final collector. C is the fixed gateway and is available
+// only after completing a direct SS-TWR exchange with B in the current scan.
+#define FIXED_GATEWAY_UID NODE_C_UID
+#define MAX_GATEWAY_CANDIDATES 1
 
 #ifdef MAIN_U1
 #define APP_NAME "UWB DW3000 A EXTERNAL DRONE"
