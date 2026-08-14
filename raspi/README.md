@@ -1,5 +1,85 @@
 # Raspberry Pi distance filtering
 
+## Live DW3000 -> probability distribution (realtime_uwb_gat.py)
+
+`realtime_uwb_gat.py` is the real-time version: the B collector plugged into the
+Pi over USB, scored by the same checkpoint and drawn by the same density code as
+`uwb_probability_pipeline.py`, which it imports rather than duplicates.
+
+```bash
+# Pi with a screen
+python3 raspi/realtime_uwb_gat.py --port /dev/ttyUSB0
+
+# headless over SSH: PNG refreshed in place + one JSON line per frame
+python3 raspi/realtime_uwb_gat.py --no-show --fast --json-out -
+
+# numbers only, no matplotlib
+python3 raspi/realtime_uwb_gat.py --no-plot
+
+# which port is the collector on
+python3 raspi/realtime_uwb_gat.py --list-ports
+```
+
+`--port` may be omitted: the port is auto-detected, preferring the CP210x /
+CH340 / FTDI bridges these ESP32 boards use.
+
+The wire format is the collector's `Original_DIST` row, parsed by the same
+`parse_uwb_line` the replay path uses, so link order, `fresh_mask` bit order and
+the `rssi_*` columns are shared with `gat_distance_filter.py` by construction.
+Replaying a session recorded here through `uwb_probability_pipeline.py` and
+running it live produce byte-identical `--json-out` output.
+
+### Why this is not just `uwb_probability_pipeline.py --port`
+
+That flag reads the port from the same loop that samples. One frame costs a
+second or more on a Pi and the collector emits a scan every ~2.5 s, so the
+kernel FIFO fills while the sampler works and each frame is built from older and
+older data. This script instead:
+
+* **Drains the port in its own thread.** Every scan still reaches the rolling
+  windows, but the sampler always restarts from the newest one. The gap is
+  reported as `lag=N` in the frame line instead of accumulating invisibly.
+* **Unwraps the scan counter.** `last_completed_cycle_seq` is a `uint8_t` in
+  both `uwb.cpp` and `uwb1.cpp`, so the counter on the wire rolls 255 -> 0 every
+  256 scans, roughly every 11 minutes. Link age is measured in scans
+  (`seq - last_seq`), which the raw counter breaks in both directions: just
+  after a roll every stored link has a *negative* age, so a link that stopped
+  reporting keeps looking fresh for a whole cycle, while a naive "the counter
+  went backwards" restart test would throw away every rolling window once every
+  11 minutes. Accumulating the modular difference into a monotonic counter
+  fixes both. A replayed log is far shorter than one cycle, which is why only
+  the live path has to deal with this.
+
+  A jump larger than `--max-forward-gap` (64 scans) is the one case this cannot
+  reconcile -- collector restart and a long dropout look the same on an 8-bit
+  counter -- so the windows are dropped and `[RESET]` is printed. Opening the
+  port toggles DTR and resets the ESP32, so this normally happens once at
+  startup; `--no-reset` holds DTR/RTS low and leaves the collector running
+  across a reconnect.
+
+  The frame line prints `seq=<wire>#<unwrapped>`: the wire value cross-
+  references the terminal log, and the JSON carries the unwrapped one because
+  the wire value repeats every 256 frames.
+* **Re-opens the port after an unplug**, with backoff.
+* **Records the session** to `data_save/<time>_terminal.txt` and
+  `_gat_input.txt`, the same pair `data_save.py` writes. This has to happen here
+  because only one process can hold the serial port, so `data_save.py` cannot be
+  run alongside. `--no-save-log` turns it off; the `_gat_input.txt` file replays
+  through `uwb_probability_pipeline.py --input-log`.
+
+### Keeping up on a Pi
+
+`--fast` lowers the sampler and grid defaults (`chains=8 samples=1200
+burn_in=600 grid_bins=140 dpi=90`), and only touches values that were not passed
+explicitly. Read `compute=` in the frame line: while it stays below the scan
+period, `lag` stays 0. `--render-every N` keeps the JSON at full rate while
+drawing less often, which is the cheapest thing to cut first.
+
+If nothing is drawn, `[WARMUP]` reports how many links have reached
+`--min-samples`. If the port carries traffic but no `Original_DIST`, the script
+says so: only the B collector prints that row, so it is usually the wrong node's
+port.
+
 ## Collected log -> probability distribution (uwb_probability_pipeline.py)
 
 `uwb_probability_pipeline.py` is the single-process version of the whole chain:
@@ -65,6 +145,31 @@ density below is not meaningful.
 
 Add `--json-out -` to also print one selection JSON line per frame. That line
 is accepted by the existing `gat_result_probability_map.py`.
+
+### All nodes free (uwb_probability_free_nodes.py)
+
+`uwb_probability_free_nodes.py` is the same pipeline with A and B sampled like
+every other node instead of pinned. It imports everything from
+`uwb_probability_pipeline.py`, so both files have to sit in the same folder.
+
+```bash
+python raspi/uwb_probability_free_nodes.py \
+  --input-log logs/device-monitor-260812-214621.log --mode last
+```
+
+Distances fix the configuration only up to a global translation, rotation and
+reflection, so the gauge is removed after sampling rather than before it: the
+lowest-energy sample is canonicalised (A at the origin, B on the +x axis) and
+every other sample is Procrustes-aligned to it, reflection allowed. Reflection
+is a gauge freedom here, not a second solution, so the two chiralities collapse
+into one -- unlike the fixed version, which mirrors across `y = 0`.
+
+Each panel also reports `spread`, the 1-sigma radius of that node's aligned
+samples. On the 260812-214621 log the fit RMS drops from about 0.44 m to 0.31 m
+because A and B can now absorb range error too, C comes out tightest
+(spread 0.6 m), and F becomes clearly bimodal: with C, D and E held in place by
+the alignment, F above and F below the A-B line are two genuinely different
+configurations rather than one mirrored pair.
 
 ### Checkpoint
 
