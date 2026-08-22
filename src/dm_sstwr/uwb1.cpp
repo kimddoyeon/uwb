@@ -70,9 +70,20 @@ unsigned long latest_distance_ms[PAIR_COUNT];
 
 // Per-pair candidate ordering. Distance to B breaks ties inside a tier; RSSI is
 // never consulted.
-#define GATEWAY_TIER_ENDPOINT 0  /* gateway is one of the pair's two nodes */
-#define GATEWAY_TIER_LINKED 1    /* gateway measured an endpoint this scan */
-#define GATEWAY_TIER_REACHABLE 2 /* any other node B can reach */
+//
+// PROVEN outranks even ENDPOINT. If an endpoint could have measured the pair it
+// would already have been tried first last scan and would itself be the proven
+// gateway, so a proven non-endpoint means the endpoint route was the one that
+// failed. Nodes acting as gateways move slowly relative to a ~4 s scan, which is
+// what makes last scan's assignment a better predictor than any static tier.
+//
+// This only reorders the candidates for a pair -- every pair is still attempted
+// every scan, and no pair is ever skipped. That matters because a skipped pair
+// would silently turn into a nan that says nothing about the geometry.
+#define GATEWAY_TIER_PROVEN 0    /* measured this exact pair in the previous scan */
+#define GATEWAY_TIER_ENDPOINT 1  /* gateway is one of the pair's two nodes */
+#define GATEWAY_TIER_LINKED 2    /* gateway measured an endpoint this scan */
+#define GATEWAY_TIER_REACHABLE 3 /* any other node B can reach */
 
 // 0: nothing is printed per pair. The scan's gateway assignment goes out as a
 //    single GATEWAY line next to Original_DIST. Failures are not lost --
@@ -82,6 +93,52 @@ unsigned long latest_distance_ms[PAIR_COUNT];
 //    failing and the question is which candidates were tried in what order.
 #define GATEWAY_DEBUG_VERBOSE 0
 
+// Worker-side RX/TX trace. 0 keeps the workers silent, which is the normal
+// setting.
+//
+// A worker that never shows up in B's table gives nothing away on its own
+// serial port: polling_node() prints only the setup banner, so "this radio is
+// dead" and "this radio is fine but B cannot hear it" look identical. Set this
+// to 1 on the suspect node and reflash just that node; it then prints one
+// RX_SUM line per second that tells the cases apart:
+//     rx=0                nothing is heard at all -- RF path, antenna, or the
+//                         node is out of range of every transmitter
+//     rx>0, poll=0        the mesh is audible but no poll is addressed here,
+//                         so B's polls are the half that is not arriving
+//     poll>0, late>0      polled, but the delayed RESP missed its TX slot;
+//                         raise POLL_RX_TO_RESP_TX_DLY_UUS
+//     poll>0, txfail>0    the RESP was started and never left the radio
+//     poll>0, ok>0        this node answers -- the loss is on B's side
+// src= counts frames per transmitting node, so a node that hears some peers
+// but not others is visible without touching B.
+#define WORKER_DEBUG_RX 1
+
+#if WORKER_DEBUG_RX
+static unsigned long worker_rx_frames = 0;
+static unsigned long worker_rx_for_me = 0;
+static unsigned long worker_rx_polls = 0;
+static unsigned long worker_resp_ok = 0;
+static unsigned long worker_resp_late = 0;
+static unsigned long worker_resp_txfail = 0;
+static unsigned long worker_rx_from[NUM_NODES] = {0};
+static unsigned long last_worker_summary_millis = 0;
+#endif
+
+// Experiment clock. millis() keeps counting from power-on, so a monitor session
+// attached to a board that has been running for a while starts at an arbitrary
+// number of minutes -- TIME read as an uptime, not as a run length. Everything
+// printed as TIME is measured from this anchor instead, so it is 0 at the start
+// of the experiment and reads as the elapsed run time when the monitor is
+// closed.
+//
+// The anchor is set in start_uwb(), which is already correct for
+// `pio run -t upload -t monitor`: uploading resets the board, so the monitor
+// opens on a fresh clock. Attaching a monitor to an already-running board
+// cannot be detected over a plain UART, so any byte arriving on the serial port
+// re-zeroes the clock -- pressing Enter once in the monitor starts a new
+// experiment without reflashing or power-cycling.
+static unsigned long session_start_ms = 0;
+
 static unsigned long last_collector_print_millis = 0;
 static uint8_t polling_pair_index = 0;
 static uint8_t next_request_id = 1;
@@ -89,10 +146,18 @@ static uint8_t current_cycle_mask_seq = 0;
 static uint16_t current_cycle_measured_mask = 0;
 static uint16_t current_cycle_no_response_mask = 0;
 static uint16_t current_cycle_recovered_mask = 0;
+// Pairs that actually got at least one ranging attempt this scan. A gateway-
+// routed pair with an empty candidate list is never asked at all, and without
+// this it reports the same nan + NO_RESPONSE as a pair that was asked and could
+// not be reached. The two mean opposite things to anything learning from the
+// log: the first says nothing about the pair, the second says the endpoints
+// could not hear each other.
+static uint16_t current_cycle_attempted_mask = 0;
 static uint8_t last_completed_cycle_seq = 0;
 static uint16_t last_completed_measured_mask = 0;
 static uint16_t last_completed_no_response_mask = 0;
 static uint16_t last_completed_recovered_mask = 0;
+static uint16_t last_completed_attempted_mask = 0;
 
 // Which gateway ended up measuring each pair this scan. U0 means "no gateway":
 // either a B-endpoint pair, or every candidate failed. Printed once per scan as
@@ -132,6 +197,39 @@ static bool time_before(unsigned long now, unsigned long deadline) {
     return (long)(now - deadline) < 0;
 }
 
+static unsigned long session_ms() {
+    return millis() - session_start_ms;
+}
+
+// Called once per loop, outside the RX/TX path, so draining the input buffer can
+// never delay a response slot.
+static void poll_session_reset() {
+    if (!Serial.available()) {
+        return;
+    }
+    while (Serial.available()) {
+        Serial.read();
+    }
+
+    session_start_ms = millis();
+    // Let the next completed scan print immediately instead of waiting out an
+    // interval measured against the old clock.
+    last_collector_print_millis =
+        session_start_ms - COLLECTOR_PRINT_INTERVAL_MS;
+    Serial.println("SESSION,t_ms=0,event=RESET");
+}
+
+// hh:mm:ss.mmm for reading, then the raw elapsed milliseconds so the field
+// stays greppable and diffable.
+static void print_session_clock(unsigned long elapsed_ms) {
+    const unsigned long total_seconds = elapsed_ms / 1000UL;
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%02lu:%02lu:%02lu.%03lu (%lu ms)",
+             total_seconds / 3600UL, (total_seconds / 60UL) % 60UL,
+             total_seconds % 60UL, elapsed_ms % 1000UL, elapsed_ms);
+    Serial.print(buf);
+}
+
 static bool is_known_uid(uint8_t uid) {
     return uid == U1 || uid == U2 || uid == U3 ||
            uid == U4 || uid == U5 || uid == U6;
@@ -149,6 +247,47 @@ static int node_index_from_uid(uint8_t uid) {
 static const char *node_label_from_uid(uint8_t uid) {
     const int node_index = node_index_from_uid(uid);
     return node_index >= 0 ? node_label[node_index] : "?";
+}
+
+// Counting only. Nothing is printed from inside the RX/TX path: a Serial write
+// there costs hundreds of microseconds and would itself push the delayed RESP
+// past its slot, turning the trace into the fault it is meant to find.
+static void worker_debug_note_frame(const uint8_t *frame) {
+#if WORKER_DEBUG_RX
+    ++worker_rx_frames;
+    const int source_index = node_index_from_uid(frame[MSG_SID_IDX]);
+    if (source_index >= 0) {
+        ++worker_rx_from[source_index];
+    }
+    if (frame[MSG_DID_IDX] == UID) {
+        ++worker_rx_for_me;
+    }
+#else
+    (void)frame;
+#endif
+}
+
+static void worker_debug_note_poll() {
+#if WORKER_DEBUG_RX
+    ++worker_rx_polls;
+#endif
+}
+
+static void worker_debug_note_response(bool started, bool sent) {
+#if WORKER_DEBUG_RX
+    if (!started) {
+        // dwt_starttx() rejected the delayed time, i.e. the slot had already
+        // passed by the time the frame was staged.
+        ++worker_resp_late;
+    } else if (!sent) {
+        ++worker_resp_txfail;
+    } else {
+        ++worker_resp_ok;
+    }
+#else
+    (void)started;
+    (void)sent;
+#endif
 }
 
 static int find_pair_index(uint8_t uid_a, uint8_t uid_b) {
@@ -302,15 +441,40 @@ static uint8_t build_gateway_candidates(
         return 0;
     }
 
+    // Set while the previous scan was completing, so during this scan it still
+    // holds that scan's assignment. U0 for pairs B measured itself and for pairs
+    // no gateway could reach.
+    const uint8_t proven_uid = last_completed_pair_gateway_uid[pair_index];
+
     uint8_t count = 0;
     for (int i = 0; i < NUM_NODES; ++i) {
         const uint8_t uid = node_uid[i];
-        if (uid == NODE_B_UID || !gateway_candidate_reachable[i]) {
+        if (uid == NODE_B_UID) {
+            continue;
+        }
+
+        // A gateway that measured this pair last scan is kept even when B's own
+        // exchange with it failed this scan. Otherwise one marginal B<->gateway
+        // link drops a working relay out of the candidate list, and the pair
+        // reports nan for a reason that has nothing to do with its endpoints.
+        //
+        // The miss limit still applies. A node that relayed several pairs last
+        // scan and has since gone away is proven for every one of them, so
+        // without this guard it would be retried first on each, paying a full
+        // GATEWAY_REPORT_WAIT_MS every time -- the timeout storm the miss limit
+        // exists to stop. Being proven buys a node the benefit of the doubt on
+        // one bad B exchange, not immunity from having left.
+        const bool proven =
+            (uid == proven_uid) &&
+            gateway_candidate_miss_count[i] < GATEWAY_MISS_LIMIT;
+        if (!gateway_candidate_reachable[i] && !proven) {
             continue;
         }
 
         uint8_t tier = GATEWAY_TIER_REACHABLE;
-        if (pair_contains_uid(pair_index, uid)) {
+        if (proven) {
+            tier = GATEWAY_TIER_PROVEN;
+        } else if (pair_contains_uid(pair_index, uid)) {
             tier = GATEWAY_TIER_ENDPOINT;
         } else if (has_confirmed_link_this_scan(uid, pair_from[pair_index]) ||
                    has_confirmed_link_this_scan(uid, pair_to[pair_index])) {
@@ -648,11 +812,13 @@ static bool send_range_response(const uint8_t *poll_frame,
     if (ret != DWT_SUCCESS) {
         dwt_forcetrxoff();
         clear_radio_status();
+        worker_debug_note_response(false, false);
         return false;
     }
 
     const bool ok = wait_for_tx_done();
     ++frame_seq_nb;
+    worker_debug_note_response(true, ok);
     return ok;
 }
 
@@ -1159,13 +1325,15 @@ static bool collect_pair_via_gateways(uint8_t pair_index,
                                       float *rx_power_dbm_out,
                                       float *fp_power_dbm_out,
                                       uint8_t *measurer_uid_out,
-                                      uint8_t *report_status_out) {
+                                      uint8_t *report_status_out,
+                                      uint8_t *attempts_out) {
     GatewayCandidate candidates[GATEWAY_CANDIDATE_SLOTS];
     const uint8_t candidate_count =
         build_gateway_candidates(pair_index, candidates);
 
     *report_status_out = REPORT_STATUS_NO_RESPONSE;
     *measurer_uid_out = U0;
+    *attempts_out = 0;
     if (candidate_count == 0) {
 #if GATEWAY_DEBUG_VERBOSE
         Serial.print("GATEWAY_NONE,pair=");
@@ -1194,6 +1362,7 @@ static bool collect_pair_via_gateways(uint8_t pair_index,
             pair_index, gateway_uid, false, REPORT_STATUS_OK);
 
         uint8_t attempt_status = REPORT_STATUS_LOCAL_ERROR;
+        ++(*attempts_out);
         const bool ok = request_pair_via_gateway(
             pair_index, gateway_uid, meters_out, rx_power_dbm_out,
             fp_power_dbm_out, measurer_uid_out, &attempt_status);
@@ -1314,6 +1483,10 @@ static void print_collector_table() {
         return;
     }
     last_collector_print_millis = now;
+    // AGE below stays on the raw millis() clock: it is a difference of two
+    // timestamps, so the anchor cancels out and a mid-run session reset cannot
+    // turn it negative.
+    const unsigned long elapsed = session_ms();
 
     Serial.println("\n=======================================================");
     Serial.print("[UWB POLLING DISTANCE] SCAN: ");
@@ -1321,8 +1494,8 @@ static void print_collector_table() {
     Serial.print(" | NEXT: ");
     Serial.print(pair_label[polling_pair_index]);
     Serial.print(" | TIME: ");
-    Serial.print(now);
-    Serial.println(" ms");
+    print_session_clock(elapsed);
+    Serial.println();
     Serial.println("-------------------------------------------------------");
     Serial.println("| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |");
     Serial.println("-------------------------------------------------------");
@@ -1353,10 +1526,14 @@ static void print_collector_table() {
     const uint16_t fresh_mask =
         last_completed_measured_mask | last_completed_recovered_mask;
     const uint16_t recovered_mask = last_completed_recovered_mask;
+    // ms is the experiment clock, not board uptime, so a log replayed by
+    // gat_distance_filter.py / uwb_probability_pipeline.py is timestamped from
+    // the start of the run. It stays monotonic for the whole session; the only
+    // step back is a deliberate session reset.
     Serial.print("Original_DIST,seq=");
     Serial.print(last_completed_cycle_seq);
     Serial.print(",ms=");
-    Serial.print(now);
+    Serial.print(elapsed);
     for (int i = 0; i < PAIR_COUNT; ++i) {
         Serial.print(",");
         Serial.print(pair_label[i]);
@@ -1378,6 +1555,27 @@ static void print_collector_table() {
             Serial.print("nan");
         }
     }
+    // First-path power, the other half of the NLOS indicator. rssi_XX is the
+    // total energy the receiver accumulated; fp_XX is the energy in the first
+    // arriving path alone, which is the one the time of flight is taken from.
+    // rssi - fp is what separates a clean line of sight (<= ~6 dB) from a
+    // blocked direct path whose distance is biased long (> ~10 dB).
+    // gat_distance_filter.py derives rssi_fp_diff_XX itself when it is absent,
+    // so only fp_XX is sent.
+    for (int i = 0; i < PAIR_COUNT; ++i) {
+        Serial.print(",fp_");
+        Serial.print(pair_label[i]);
+        Serial.print("=");
+        if (is_completed_scan_distance((uint8_t)i) &&
+            isfinite(latest_fp_power_dbm[i])) {
+            Serial.print(latest_fp_power_dbm[i], 2);
+        } else {
+            Serial.print("nan");
+        }
+    }
+    // A nan is only evidence about the pair when its attempted bit is set.
+    Serial.print(",attempted_mask=0x");
+    Serial.print(last_completed_attempted_mask, HEX);
     Serial.print(",fresh_mask=0x");
     Serial.print(fresh_mask, HEX);
     Serial.print(",recovered_mask=0x");
@@ -1417,6 +1615,7 @@ static void handle_worker_frame(const uint8_t *frame, uint64_t rx_timestamp) {
     const uint8_t pair_index = frame[MSG_PAIR_IDX];
 
     if (func == FUNC_CODE_RANGE_POLL && frame[MSG_DID_IDX] == UID) {
+        worker_debug_note_poll();
         send_range_response(frame, rx_timestamp);
         return;
     }
@@ -1490,10 +1689,13 @@ void start_uwb() {
     dwt_configciadiag(DW_CIA_DIAG_LOG_ALL);
 
     reset_gateway_candidates();
+    session_start_ms = millis();
     print_setup_roster();
 }
 
 void polling_master() {
+    poll_session_reset();
+
     const uint8_t pair_index = polling_pair_index;
     float meters = 0.0f;
     float rx_power_dbm = NAN;
@@ -1502,12 +1704,14 @@ void polling_master() {
     bool pair_no_response = false;
     uint8_t measurer_uid = U0;
     uint8_t range_status = REPORT_STATUS_LOCAL_ERROR;
+    uint8_t attempts_made = 0;
 
     if (pair_index == 0) {
         current_cycle_mask_seq = cycle_seq_nb;
         current_cycle_measured_mask = 0;
         current_cycle_no_response_mask = 0;
         current_cycle_recovered_mask = 0;
+        current_cycle_attempted_mask = 0;
         for (int i = 0; i < PAIR_COUNT; ++i) {
             pair_gateway_uid[i] = U0;
         }
@@ -1519,7 +1723,7 @@ void polling_master() {
     if (UID == NODE_B_UID && is_gateway_routed_pair(pair_index)) {
         ok = collect_pair_via_gateways(
             pair_index, &meters, &rx_power_dbm, &fp_power_dbm,
-            &measurer_uid, &range_status);
+            &measurer_uid, &range_status, &attempts_made);
     } else if (pair_from[pair_index] == UID ||
                pair_to[pair_index] == UID) {
         const uint8_t peer_uid =
@@ -1528,17 +1732,22 @@ void polling_master() {
         ok = range_to_peer(pair_index, peer_uid, &meters, &rx_power_dbm,
                            &fp_power_dbm, &range_status);
         measurer_uid = ok ? UID : U0;
+        attempts_made = 1;
     } else {
         ok = request_remote_pair(
             pair_index, pair_from[pair_index], &meters,
             &rx_power_dbm, &fp_power_dbm, &measurer_uid,
             &range_status);
+        attempts_made = 1;
     }
 
     pair_no_response =
         !ok && range_status == REPORT_STATUS_NO_RESPONSE;
 
     const uint16_t current_pair_bit = pair_bit(pair_index);
+    if (attempts_made > 0) {
+        current_cycle_attempted_mask |= current_pair_bit;
+    }
     if (ok) {
         const bool stored =
             store_distance(pair_index, meters, rx_power_dbm, fp_power_dbm,
@@ -1576,6 +1785,7 @@ void polling_master() {
         last_completed_no_response_mask =
             current_cycle_no_response_mask;
         last_completed_recovered_mask = current_cycle_recovered_mask;
+        last_completed_attempted_mask = current_cycle_attempted_mask;
         for (int i = 0; i < PAIR_COUNT; ++i) {
             last_completed_pair_gateway_uid[i] = pair_gateway_uid[i];
         }
@@ -1590,11 +1800,55 @@ void polling_master() {
     delay(POLLING_PAIR_GAP_MS);
 }
 
+// One line per second, printed after the RX/TX path has finished so it can
+// never eat into a response slot. An all-zero line is a result too: it is the
+// difference between "heard nothing" and "was never asked".
+static void print_worker_rx_summary() {
+#if WORKER_DEBUG_RX
+    const unsigned long now = millis();
+    if (now - last_worker_summary_millis < 1000UL) {
+        return;
+    }
+    last_worker_summary_millis = now;
+
+    Serial.print("RX_SUM,node=");
+    Serial.print(ROLE_LABEL);
+    Serial.print(",ms=");
+    Serial.print(session_ms());
+    Serial.print(",rx=");
+    Serial.print(worker_rx_frames);
+    Serial.print(",mine=");
+    Serial.print(worker_rx_for_me);
+    Serial.print(",poll=");
+    Serial.print(worker_rx_polls);
+    Serial.print(",ok=");
+    Serial.print(worker_resp_ok);
+    Serial.print(",late=");
+    Serial.print(worker_resp_late);
+    Serial.print(",txfail=");
+    Serial.print(worker_resp_txfail);
+    for (int i = 0; i < NUM_NODES; ++i) {
+        if (worker_rx_from[i] == 0) {
+            continue;
+        }
+        Serial.print(",");
+        Serial.print(node_label[i]);
+        Serial.print(":");
+        Serial.print(worker_rx_from[i]);
+    }
+    Serial.println();
+#endif
+}
+
 void polling_node() {
+    poll_session_reset();
+
     uint64_t rx_timestamp = 0;
     if (receive_frame(POLLING_WORKER_RX_WINDOW_MS, &rx_timestamp)) {
+        worker_debug_note_frame(rx_msg);
         handle_worker_frame(rx_msg, rx_timestamp);
     }
+    print_worker_rx_summary();
 }
 
 void initiator() {
