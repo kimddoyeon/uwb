@@ -1,10 +1,9 @@
 // Dynamic multi-gateway variant of dm_sstwr/uwb.cpp.
 //
 // B is still the only collector, but no node is hardwired as the gateway.
-// Every node that completes an exchange with B during the current scan becomes
-// a gateway candidate, and each B-less pair picks its own gateway from that
-// list. Nothing in this file reads FIXED_GATEWAY_UID or MAX_GATEWAY_CANDIDATES,
-// so uwb.h needs no change and both variants stay buildable.
+// Nodes heard in this scan and remembered successful routes are candidates.
+// Each B-less pair picks its own gateway within a bounded scan budget.
+// Nothing in this file reads FIXED_GATEWAY_UID or MAX_GATEWAY_CANDIDATES.
 //
 // SS-TWR ranging, RANGE_POLL/RANGE_RESP, the distance formula, RX/FP power
 // reads, and the report frame layout are carried over verbatim. Geometric
@@ -20,6 +19,9 @@
 #include "dw3000.h"
 
 #ifdef USE_DYNAMIC_GATEWAY
+
+static_assert(MSG_CIR_DATA_IDX + CIR_DATA_BYTES <= MSG_LEN - 2,
+              "CIR report payload overlaps the radio frame check sequence");
 
 dwt_config_t config = {
     5,            /* Channel number. */
@@ -55,13 +57,57 @@ bool latest_distance_recovered[PAIR_COUNT];
 uint8_t latest_distance_seq[PAIR_COUNT];
 unsigned long latest_distance_ms[PAIR_COUNT];
 
+// Four raw I/Q samples from the Ipatov accumulator, starting two samples
+// before the integer part of the first-path index. Keep the diagnostic from
+// the device that actually measured the pair, including through a gateway.
+struct CirWindow {
+    bool valid;
+    uint16_t fp_index_q10_6;
+    uint8_t iq[CIR_DATA_BYTES];
+};
+static CirWindow current_cir;
+static CirWindow latest_cir[PAIR_COUNT];
+static uint8_t latest_cir_measurer_uid[PAIR_COUNT];
+
+static void clear_cir_window(CirWindow *window) {
+    window->valid = false;
+    window->fp_index_q10_6 = CIR_FP_INDEX_INVALID;
+}
+
+static bool cir_fp_index_valid(uint16_t fp_index) {
+    // The 64 MHz Ipatov accumulator contains 1016 complex samples.
+    const uint16_t sample = fp_index >> 6;
+    const uint16_t start = sample >= 2 ? sample - 2 : 0;
+    return fp_index != 0 && fp_index != CIR_FP_INDEX_INVALID &&
+           start + CIR_SAMPLE_COUNT <= 1016;
+}
+
+static void read_cir_window(CirWindow *window) {
+    clear_cir_window(window);
+    if ((dwt_read16bitoffsetreg(IP_DIAG_12_ID, 0) & 0x0FFFU) == 0) {
+        return;
+    }
+    const uint16_t fp_index = dwt_read16bitoffsetreg(IP_DIAG_8_ID, 0);
+    if (!cir_fp_index_valid(fp_index)) {
+        return;
+    }
+    const uint16_t sample = fp_index >> 6;
+    const uint16_t start = sample >= 2 ? sample - 2 : 0;
+    uint8_t raw[CIR_DATA_BYTES + 1];
+    dwt_readaccdata(raw, sizeof(raw), start);
+    // The first byte returned by dwt_readaccdata() is a dummy byte.
+    for (uint8_t i = 0; i < CIR_DATA_BYTES; ++i) {
+        window->iq[i] = raw[i + 1];
+    }
+    window->fp_index_q10_6 = fp_index;
+    window->valid = true;
+}
+
 // Every node except B may act as a gateway, so the candidate list can never be
 // longer than that.
 #define GATEWAY_CANDIDATE_SLOTS (NUM_NODES - 1)
 
-// A pair only fails after every candidate has been tried. Each failed attempt
-// costs up to GATEWAY_REPORT_WAIT_MS, so a fully unreachable pair can burn
-// GATEWAY_CANDIDATE_SLOTS * 450 ms; lower this to trade coverage for scan time.
+// Try alternative gateways only while this pair's share of the scan remains.
 #define MAX_GATEWAY_ATTEMPTS_PER_PAIR GATEWAY_CANDIDATE_SLOTS
 
 // Consecutive silent gateway requests before a candidate is dropped for the
@@ -74,7 +120,7 @@ unsigned long latest_distance_ms[PAIR_COUNT];
 // PROVEN outranks even ENDPOINT. If an endpoint could have measured the pair it
 // would already have been tried first last scan and would itself be the proven
 // gateway, so a proven non-endpoint means the endpoint route was the one that
-// failed. Nodes acting as gateways move slowly relative to a ~4 s scan, which is
+// failed. Nodes acting as gateways move slowly relative to a sub-second scan, which is
 // what makes last scan's assignment a better predictor than any static tier.
 //
 // This only reorders the candidates for a pair -- every pair is still attempted
@@ -139,7 +185,9 @@ static unsigned long last_worker_summary_millis = 0;
 // experiment without reflashing or power-cycling.
 static unsigned long session_start_ms = 0;
 
-static unsigned long last_collector_print_millis = 0;
+static bool collector_budget_active = false;
+static unsigned long collector_scan_deadline_ms = 0;
+static unsigned long collector_pair_deadline_ms = 0;
 static uint8_t polling_pair_index = 0;
 static uint8_t next_request_id = 1;
 static uint8_t current_cycle_mask_seq = 0;
@@ -164,6 +212,8 @@ static uint16_t last_completed_attempted_mask = 0;
 // a single GATEWAY line instead of one line per pair.
 static uint8_t pair_gateway_uid[PAIR_COUNT];
 static uint8_t last_completed_pair_gateway_uid[PAIR_COUNT];
+// Keep the last successful route even if a later scan runs out of time.
+static uint8_t preferred_pair_gateway_uid[PAIR_COUNT];
 
 static const uint8_t node_uid[NUM_NODES] = {
     NODE_A_UID, NODE_B_UID, NODE_C_UID,
@@ -197,6 +247,34 @@ static bool time_before(unsigned long now, unsigned long deadline) {
     return (long)(now - deadline) < 0;
 }
 
+static unsigned long radio_deadline(unsigned long timeout_ms) {
+    unsigned long deadline = millis() + timeout_ms;
+    if (collector_budget_active &&
+        time_before(collector_pair_deadline_ms, deadline)) {
+        deadline = collector_pair_deadline_ms;
+    }
+    return deadline;
+}
+
+static bool collector_has_time() {
+    return !collector_budget_active ||
+           time_before(millis(), collector_pair_deadline_ms);
+}
+
+static void budgeted_delay(unsigned long delay_ms) {
+    if (collector_budget_active) {
+        const unsigned long now = millis();
+        if (!time_before(now, collector_pair_deadline_ms)) {
+            return;
+        }
+        const unsigned long remaining = collector_pair_deadline_ms - now;
+        if (delay_ms > remaining) {
+            delay_ms = remaining;
+        }
+    }
+    delay(delay_ms);
+}
+
 static unsigned long session_ms() {
     return millis() - session_start_ms;
 }
@@ -212,10 +290,6 @@ static void poll_session_reset() {
     }
 
     session_start_ms = millis();
-    // Let the next completed scan print immediately instead of waiting out an
-    // interval measured against the old clock.
-    last_collector_print_millis =
-        session_start_ms - COLLECTOR_PRINT_INTERVAL_MS;
     Serial.println("SESSION,t_ms=0,event=RESET");
 }
 
@@ -441,10 +515,7 @@ static uint8_t build_gateway_candidates(
         return 0;
     }
 
-    // Set while the previous scan was completing, so during this scan it still
-    // holds that scan's assignment. U0 for pairs B measured itself and for pairs
-    // no gateway could reach.
-    const uint8_t proven_uid = last_completed_pair_gateway_uid[pair_index];
+    const uint8_t proven_uid = preferred_pair_gateway_uid[pair_index];
 
     uint8_t count = 0;
     for (int i = 0; i < NUM_NODES; ++i) {
@@ -453,7 +524,7 @@ static uint8_t build_gateway_candidates(
             continue;
         }
 
-        // A gateway that measured this pair last scan is kept even when B's own
+        // A gateway that previously measured this pair is kept even when B's own
         // exchange with it failed this scan. Otherwise one marginal B<->gateway
         // link drops a working relay out of the candidate list, and the pair
         // reports nan for a reason that has nothing to do with its endpoints.
@@ -665,7 +736,7 @@ static uint16_t read_rx_frame(uint8_t *buf) {
 }
 
 static bool wait_for_tx_done() {
-    const unsigned long deadline_ms = millis() + TX_DONE_TIMEOUT_MS;
+    const unsigned long deadline_ms = radio_deadline(TX_DONE_TIMEOUT_MS);
 
     while (time_before(millis(), deadline_ms)) {
         status_reg = dwt_read32bitreg(SYS_STATUS_ID);
@@ -690,6 +761,9 @@ static bool wait_for_tx_done() {
 }
 
 static bool transmit_current_frame(bool ranging_frame) {
+    if (!collector_has_time()) {
+        return false;
+    }
     clear_radio_status();
     tx_msg[MSG_SN_IDX] = frame_seq_nb;
     dwt_writetxdata((uint16_t)MSG_LEN, tx_msg, 0);
@@ -753,6 +827,7 @@ static bool store_distance(uint8_t pair_index, float meters,
     latest_distances[pair_index] = meters;
     latest_rx_power_dbm[pair_index] = rx_power_dbm;
     latest_fp_power_dbm[pair_index] = fp_power_dbm;
+    latest_cir[pair_index] = current_cir;
     latest_distance_valid[pair_index] = true;
     latest_distance_recovered[pair_index] = recovered;
     latest_distance_seq[pair_index] = seq;
@@ -770,6 +845,8 @@ static void invalidate_distance(uint8_t pair_index) {
     latest_distances[pair_index] = NAN;
     latest_rx_power_dbm[pair_index] = NAN;
     latest_fp_power_dbm[pair_index] = NAN;
+    clear_cir_window(&latest_cir[pair_index]);
+    latest_cir_measurer_uid[pair_index] = U0;
 }
 
 static bool send_range_response(const uint8_t *poll_frame,
@@ -829,6 +906,11 @@ static bool range_to_peer(uint8_t pair_index, uint8_t target_uid,
     *report_status_out = REPORT_STATUS_LOCAL_ERROR;
     *rx_power_dbm_out = NAN;
     *fp_power_dbm_out = NAN;
+    clear_cir_window(&current_cir);
+    if (!collector_has_time()) {
+        *report_status_out = REPORT_STATUS_NO_RESPONSE;
+        return false;
+    }
     if (pair_index >= PAIR_COUNT || !is_known_uid(target_uid) ||
         !pair_contains_uid(pair_index, UID) ||
         !pair_contains_uid(pair_index, target_uid)) {
@@ -855,7 +937,7 @@ static bool range_to_peer(uint8_t pair_index, uint8_t target_uid,
     }
     ++frame_seq_nb;
 
-    const unsigned long deadline_ms = millis() + TX_DONE_TIMEOUT_MS;
+    const unsigned long deadline_ms = radio_deadline(TX_DONE_TIMEOUT_MS);
     while (time_before(millis(), deadline_ms)) {
         status_reg = dwt_read32bitreg(SYS_STATUS_ID);
 
@@ -909,6 +991,7 @@ static bool range_to_peer(uint8_t pair_index, uint8_t target_uid,
                 read_signal_power_dbm(&rx_power_dbm, &fp_power_dbm);
                 *rx_power_dbm_out = rx_power_dbm;
                 *fp_power_dbm_out = fp_power_dbm;
+                read_cir_window(&current_cir);
 
                 dwt_forcetrxoff();
                 clear_radio_status();
@@ -964,6 +1047,14 @@ static bool send_report(uint8_t report_dest_uid, uint8_t pair_index,
     write_i16_le(&tx_msg[MSG_FP_POWER_CDBM_IDX], fp_power_cdbm);
     tx_msg[MSG_REQUEST_ID_IDX] = request_id;
     tx_msg[MSG_MEASURER_UID_IDX] = ok ? measurer_uid : U0;
+    write_u16_le(&tx_msg[MSG_CIR_FP_INDEX_IDX],
+                 ok && current_cir.valid ? current_cir.fp_index_q10_6
+                                         : CIR_FP_INDEX_INVALID);
+    if (ok && current_cir.valid) {
+        for (uint8_t i = 0; i < CIR_DATA_BYTES; ++i) {
+            tx_msg[MSG_CIR_DATA_IDX + i] = current_cir.iq[i];
+        }
+    }
     return transmit_current_frame(false);
 }
 
@@ -982,6 +1073,7 @@ static bool wait_for_report(uint8_t pair_index,
     *fp_power_dbm_out = NAN;
     *measurer_uid_out = U0;
     *report_status_out = REPORT_STATUS_LOCAL_ERROR;
+    clear_cir_window(&current_cir);
     last_report_reporter_responded = false;
     if (pair_index >= PAIR_COUNT ||
         !is_known_uid(expected_reporter_uid) ||
@@ -989,7 +1081,7 @@ static bool wait_for_report(uint8_t pair_index,
         return false;
     }
 
-    const unsigned long deadline_ms = millis() + report_wait_ms;
+    const unsigned long deadline_ms = radio_deadline(report_wait_ms);
     clear_radio_status();
     dwt_rxenable(DWT_START_RX_IMMEDIATE);
 
@@ -1060,6 +1152,16 @@ static bool wait_for_report(uint8_t pair_index,
                     *fp_power_dbm_out =
                         fp_power_cdbm == INT16_MIN
                             ? NAN : fp_power_cdbm / 100.0f;
+                    const uint16_t fp_index =
+                        read_u16_le(&rx_msg[MSG_CIR_FP_INDEX_IDX]);
+                    if (cir_fp_index_valid(fp_index)) {
+                        current_cir.fp_index_q10_6 = fp_index;
+                        for (uint8_t i = 0; i < CIR_DATA_BYTES; ++i) {
+                            current_cir.iq[i] =
+                                rx_msg[MSG_CIR_DATA_IDX + i];
+                        }
+                        current_cir.valid = true;
+                    }
                     return true;
                 }
 
@@ -1356,6 +1458,9 @@ static bool collect_pair_via_gateways(uint8_t pair_index,
     }
 
     for (uint8_t i = 0; i < attempts; ++i) {
+        if (!collector_has_time()) {
+            break;
+        }
         const uint8_t gateway_uid = candidates[i].uid;
         print_gateway_trace(
             i == 0 ? "GATEWAY_SELECT" : "GATEWAY_RETRY",
@@ -1372,6 +1477,7 @@ static bool collect_pair_via_gateways(uint8_t pair_index,
             // Recorded, not printed: the whole scan goes out as one GATEWAY
             // line when the cycle completes.
             pair_gateway_uid[pair_index] = gateway_uid;
+            preferred_pair_gateway_uid[pair_index] = gateway_uid;
             print_gateway_trace(
                 "GATEWAY_SUCCESS", pair_index, gateway_uid,
                 false, REPORT_STATUS_OK);
@@ -1391,7 +1497,7 @@ static bool collect_pair_via_gateways(uint8_t pair_index,
             true, attempt_status);
 
         if (i + 1 < attempts) {
-            delay(POLLING_DIRECTION_RETRY_GAP_MS);
+            budgeted_delay(POLLING_DIRECTION_RETRY_GAP_MS);
         }
     }
 
@@ -1461,8 +1567,13 @@ static void print_setup_roster() {
     Serial.println("MODE,U2_CENTERED_POLLING");
     Serial.println("PAIR_ORDER,AB,BC,BD,BE,BF,CD,DE,EF,CE,CF,DF,AC,AD,AE,AF");
 #ifdef COLLECTOR_NODE
-    Serial.print("COLLECTOR,B,serial_output=TABULAR_COMPLETED_SCAN,period_ms=");
-    Serial.print(COLLECTOR_PRINT_INTERVAL_MS);
+    Serial.println("CIR_FORMAT,IPATOV_IQ18_LE,fp_index=Q10.6,pre=2,samples=4");
+#endif
+#ifdef COLLECTOR_NODE
+    Serial.print("COLLECTOR,B,serial_output=TABULAR_COMPLETED_SCAN,max_cycle_ms=");
+    Serial.print(COLLECTOR_MAX_CYCLE_MS);
+    Serial.print(",scan_budget_ms=");
+    Serial.print(COLLECTOR_SCAN_BUDGET_MS);
     Serial.print(",stale_ms=");
     Serial.println(MAX_DISTANCE_AGE_MS);
     Serial.print(
@@ -1479,10 +1590,6 @@ static void print_setup_roster() {
 static void print_collector_table() {
 #ifdef COLLECTOR_NODE
     const unsigned long now = millis();
-    if (now - last_collector_print_millis < COLLECTOR_PRINT_INTERVAL_MS) {
-        return;
-    }
-    last_collector_print_millis = now;
     // AGE below stays on the raw millis() clock: it is a difference of two
     // timestamps, so the anchor cancels out and a mid-run session reset cannot
     // turn it negative.
@@ -1603,6 +1710,40 @@ static void print_collector_table() {
         Serial.print(node_label_from_uid(last_completed_pair_gateway_uid[i]));
     }
     Serial.println();
+    // Each value is receiver:Q10.6-first-path-index:four raw I/Q samples.
+    // The samples are 3-byte signed little-endian I, then 3-byte Q, with the
+    // leading dummy accumulator byte already removed. "nan" means no CIR was
+    // obtained for this pair in this scan; it does not classify the link.
+    Serial.print("CIR,seq=");
+    Serial.print(last_completed_cycle_seq);
+    Serial.print(",ms=");
+    Serial.print(elapsed);
+    Serial.print(",format=IPATOV_IQ18_LE,pre=2,samples=");
+    Serial.print(CIR_SAMPLE_COUNT);
+    for (int i = 0; i < PAIR_COUNT; ++i) {
+        Serial.print(",");
+        Serial.print(pair_label[i]);
+        Serial.print("=");
+        if (!is_completed_scan_distance((uint8_t)i) ||
+            !latest_cir[i].valid) {
+            Serial.print("nan");
+            continue;
+        }
+        Serial.print(node_label_from_uid(latest_cir_measurer_uid[i]));
+        Serial.print(":");
+        Serial.print(latest_cir[i].fp_index_q10_6);
+        Serial.print(":");
+        for (uint8_t j = 0; j < CIR_DATA_BYTES; ++j) {
+            const uint8_t value = latest_cir[i].iq[j];
+            if (value < 0x10) {
+                Serial.print("0");
+            }
+            Serial.print(value, HEX);
+        }
+    }
+    Serial.println();
+    // Finish this cycle's UART output before starting the next measurement.
+    Serial.flush();
 #endif
 }
 
@@ -1707,6 +1848,8 @@ void polling_master() {
     uint8_t attempts_made = 0;
 
     if (pair_index == 0) {
+        collector_budget_active = true;
+        collector_scan_deadline_ms = millis() + COLLECTOR_SCAN_BUDGET_MS;
         current_cycle_mask_seq = cycle_seq_nb;
         current_cycle_measured_mask = 0;
         current_cycle_no_response_mask = 0;
@@ -1720,7 +1863,18 @@ void polling_master() {
         reset_gateway_candidates();
     }
 
-    if (UID == NODE_B_UID && is_gateway_routed_pair(pair_index)) {
+    // Give every remaining pair a share, so an unreachable early pair cannot
+    // consume the entire scan. Successful exchanges leave time for later pairs.
+    const unsigned long pair_start_ms = millis();
+    const unsigned long remaining_ms =
+        time_before(pair_start_ms, collector_scan_deadline_ms)
+            ? collector_scan_deadline_ms - pair_start_ms : 0;
+    collector_pair_deadline_ms =
+        pair_start_ms + remaining_ms / (PAIR_COUNT - pair_index);
+
+    if (!collector_has_time()) {
+        range_status = REPORT_STATUS_NO_RESPONSE;
+    } else if (UID == NODE_B_UID && is_gateway_routed_pair(pair_index)) {
         ok = collect_pair_via_gateways(
             pair_index, &meters, &rx_power_dbm, &fp_power_dbm,
             &measurer_uid, &range_status, &attempts_made);
@@ -1742,7 +1896,8 @@ void polling_master() {
     }
 
     pair_no_response =
-        !ok && range_status == REPORT_STATUS_NO_RESPONSE;
+        attempts_made > 0 && !ok &&
+        range_status == REPORT_STATUS_NO_RESPONSE;
 
     const uint16_t current_pair_bit = pair_bit(pair_index);
     if (attempts_made > 0) {
@@ -1753,6 +1908,8 @@ void polling_master() {
             store_distance(pair_index, meters, rx_power_dbm, fp_power_dbm,
                            cycle_seq_nb, false);
         if (stored) {
+            latest_cir_measurer_uid[pair_index] =
+                current_cir.valid ? measurer_uid : U0;
             current_cycle_measured_mask |= current_pair_bit;
             current_cycle_no_response_mask &=
                 (uint16_t)~current_pair_bit;
@@ -1795,9 +1952,11 @@ void polling_master() {
     }
 
     if (cycle_completed) {
+        collector_budget_active = false;
         print_collector_table();
+    } else {
+        budgeted_delay(POLLING_PAIR_GAP_MS);
     }
-    delay(POLLING_PAIR_GAP_MS);
 }
 
 // One line per second, printed after the RX/TX path has finished so it can

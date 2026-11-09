@@ -273,6 +273,21 @@ the local start time in their names:
 - `YYYY-MM-DD_HH-MM-SS_gat_input.txt` contains only `Original_DIST,...` rows
   and can be passed directly to `gat_distance_filter.py --input-log`.
 
+The full terminal log also contains one `CIR,seq=...` row after each
+`Original_DIST`/`GATEWAY` scan. Match the rows by `seq`. `fp_AB` in
+`Original_DIST` is first-path power in dBm; a CIR field such as
+`AB=B:15936:<48 hex digits>` is the separate raw accumulator window for AB.
+The letter is the receiver that measured the pair, the decimal index is the
+Ipatov first-path index in Q10.6 units (divide by 64 for a sample position),
+and the hex bytes encode four consecutive complex samples. Each sample has
+three little-endian bytes for I and three for Q, stored as signed 24-bit
+values with 18-bit dynamic range.
+The window begins at `max(0, floor(index / 64) - 2)`. The accumulator's dummy
+byte is omitted. `nan` means no CIR window was captured for that pair; it is
+not a LOS/NLOS or presence label. This is a four-sample window, not the full
+CIR waveform. The `*_gat_input.txt` file intentionally keeps only distance
+rows, so use `*_terminal.txt` when retaining gateway and CIR provenance.
+
 Stop monitoring with `Ctrl+C`; both files are flushed after every line.
 
 Until a trained `gat_edge_filter.pt` exists, `gat_distance_filter.py` uses the

@@ -1,0 +1,789 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+DEVICE ID: deca0302
+XTRIM OTP READ FAIL
+PLL is locked..
+PGF cal complete..
+UWB DW3000 B POLLING MASTER
+ROLE,B,internal_drone_polling_master,UID,14,TAG,0x00
+MODE,U2_CENTERED_POLLING
+PAIR_ORDER,AB,BC,BD,BE,BF,CD,DE,EF,CE,CF,DF,AC,AD,AE,AF
+COLLECTOR,B,serial_output=TABULAR_COMPLETED_SCAN,period_ms=1000,stale_ms=3000
+GATEWAY_MODE,DYNAMIC,candidates=B_DIRECT_EXCHANGE,order=ENDPOINT|LINKED|REACHABLE_THEN_NEAREST_B,rssi_threshold=OFF,max_attempts_per_pair=5,miss_limit=2
+Setup over........
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 0 | NEXT: AB | TIME: 1421 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | nan         | nan       | TIMEOUT | nan
+|  BC  | 3.404       | -71.21 | VALID | 1292
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.540       | -89.23 | VALID | 1231
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.680       | -86.93 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=0,ms=1421,AB=nan,BC=3.404,BD=nan,BE=nan,BF=nan,CD=14.540,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.680,AD=nan,AE=nan,AF=nan,rssi_AB=nan,rssi_BC=-71.21,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-89.23,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.93,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x822,recovered_mask=0x0,last_scan_seq=0,last_measured_mask=0x822,last_no_response_mask=0x77DD,last_recovered_mask=0x0
+GATEWAY,seq=0,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 1 | NEXT: AB | TIME: 4191 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.997       | -85.08 | VALID | 2629
+|  BC  | 3.431       | -70.60 | VALID | 2617
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.560       | -84.76 | VALID | 2557
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.68 | VALID | 460
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=1,ms=4191,AB=8.997,BC=3.431,BD=nan,BE=nan,BF=nan,CD=14.560,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-85.08,rssi_BC=-70.60,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-84.76,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.68,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=1,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=1,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 2 | NEXT: AB | TIME: 6305 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.841       | -86.53 | VALID | 1973
+|  BC  | 3.412       | -71.21 | VALID | 1961
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.330       | -89.69 | VALID | 1901
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=2,ms=6305,AB=8.841,BC=3.412,BD=nan,BE=nan,BF=nan,CD=14.330,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-86.53,rssi_BC=-71.21,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-89.69,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x23,recovered_mask=0x0,last_scan_seq=2,last_measured_mask=0x23,last_no_response_mask=0x7FDC,last_recovered_mask=0x0
+GATEWAY,seq=2,CD=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 3 | NEXT: AB | TIME: 9638 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.922       | -84.32 | VALID | 3193
+|  BC  | 3.416       | -70.70 | VALID | 3181
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.260       | -90.20 | VALID | 2973
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.93 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=3,ms=9638,AB=8.922,BC=3.416,BD=nan,BE=nan,BF=nan,CD=14.260,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-84.32,rssi_BC=-70.70,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-90.20,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.93,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=3,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=3,CD=A,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 4 | NEXT: AB | TIME: 12510 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.916       | -83.43 | VALID | 2731
+|  BC  | 3.361       | -74.26 | VALID | 2719
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.560       | -88.44 | VALID | 2659
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.690       | -86.22 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=4,ms=12510,AB=8.916,BC=3.361,BD=nan,BE=nan,BF=nan,CD=14.560,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.690,AD=nan,AE=nan,AF=nan,rssi_AB=-83.43,rssi_BC=-74.26,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.44,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=4,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=4,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 5 | NEXT: AB | TIME: 15997 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.744       | -83.32 | VALID | 3346
+|  BC  | 3.299       | -70.42 | VALID | 3334
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.600       | -88.82 | VALID | 3274
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.660       | -86.44 | VALID | 965
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=5,ms=15997,AB=8.744,BC=3.299,BD=nan,BE=nan,BF=nan,CD=14.600,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.660,AD=nan,AE=nan,AF=nan,rssi_AB=-83.32,rssi_BC=-70.42,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.82,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=5,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=5,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 6 | NEXT: AB | TIME: 18352 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.719       | -81.10 | VALID | 2215
+|  BC  | 3.291       | -71.67 | VALID | 2203
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.610       | -88.82 | VALID | 2143
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.22 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=6,ms=18352,AB=8.719,BC=3.291,BD=nan,BE=nan,BF=nan,CD=14.610,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-81.10,rssi_BC=-71.67,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.82,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=6,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=6,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 7 | NEXT: AB | TIME: 20707 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.719       | -81.99 | VALID | 2215
+|  BC  | 3.287       | -79.55 | VALID | 2203
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.580       | -88.82 | VALID | 2143
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.680       | -86.22 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=7,ms=20707,AB=8.719,BC=3.287,BD=nan,BE=nan,BF=nan,CD=14.580,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.680,AD=nan,AE=nan,AF=nan,rssi_AB=-81.99,rssi_BC=-79.55,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.82,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=7,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=7,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 8 | NEXT: AB | TIME: 24768 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.724       | -81.52 | VALID | 3921
+|  BC  | 3.282       | -79.41 | VALID | 3909
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.560       | -88.44 | VALID | 3849
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.93 | VALID | 1390
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=8,ms=24768,AB=8.724,BC=3.282,BD=nan,BE=nan,BF=nan,CD=14.560,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-81.52,rssi_BC=-79.41,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.44,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.93,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=8,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=8,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 9 | NEXT: AB | TIME: 28526 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.853       | -81.24 | VALID | 3618
+|  BC  | 3.400       | -71.55 | VALID | 3606
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.550       | -88.09 | VALID | 3546
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.710       | -86.44 | VALID | 1390
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=9,ms=28526,AB=8.853,BC=3.400,BD=nan,BE=nan,BF=nan,CD=14.550,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.710,AD=nan,AE=nan,AF=nan,rssi_AB=-81.24,rssi_BC=-71.55,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.09,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=9,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=9,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 10 | NEXT: AB | TIME: 31602 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.834       | -81.52 | VALID | 2936
+|  BC  | 3.440       | -71.10 | VALID | 2924
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.290       | -90.20 | VALID | 2864
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.660       | -87.19 | VALID | 440
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=10,ms=31602,AB=8.834,BC=3.440,BD=nan,BE=nan,BF=nan,CD=14.290,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.660,AD=nan,AE=nan,AF=nan,rssi_AB=-81.52,rssi_BC=-71.10,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-90.20,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-87.19,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=10,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=10,CD=C,AC=A
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 11 | NEXT: AB | TIME: 35045 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.818       | -80.66 | VALID | 3302
+|  BC  | 3.479       | -71.92 | VALID | 3290
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | nan         | nan       | TIMEOUT | nan
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.680       | -86.22 | VALID | 776
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=11,ms=35045,AB=8.818,BC=3.479,BD=nan,BE=nan,BF=nan,CD=nan,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.680,AD=nan,AE=nan,AF=nan,rssi_AB=-80.66,rssi_BC=-71.92,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=nan,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x803,recovered_mask=0x0,last_scan_seq=11,last_measured_mask=0x803,last_no_response_mask=0x77FC,last_recovered_mask=0x0
+GATEWAY,seq=11,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 12 | NEXT: AB | TIME: 38493 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.808       | -80.72 | VALID | 3308
+|  BC  | 3.444       | -71.32 | VALID | 3296
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.390       | -89.54 | VALID | 3236
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.22 | VALID | 776
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=12,ms=38493,AB=8.808,BC=3.444,BD=nan,BE=nan,BF=nan,CD=14.390,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-80.72,rssi_BC=-71.32,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-89.54,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=12,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=12,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 13 | NEXT: AB | TIME: 41670 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.745       | -78.92 | VALID | 3037
+|  BC  | 3.519       | -71.67 | VALID | 3025
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.450       | -89.54 | VALID | 2965
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.22 | VALID | 350
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=13,ms=41670,AB=8.745,BC=3.519,BD=nan,BE=nan,BF=nan,CD=14.450,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-78.92,rssi_BC=-71.67,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-89.54,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=13,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=13,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 14 | NEXT: AB | TIME: 44760 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.842       | -81.99 | VALID | 2950
+|  BC  | 3.483       | -71.67 | VALID | 2938
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.250       | -87.19 | VALID | 2878
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.640       | -86.01 | VALID | 460
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=14,ms=44760,AB=8.842,BC=3.483,BD=nan,BE=nan,BF=nan,CD=14.250,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.640,AD=nan,AE=nan,AF=nan,rssi_AB=-81.99,rssi_BC=-71.67,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-87.19,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.01,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=14,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=14,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 15 | NEXT: AB | TIME: 48048 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.358       | -82.90 | VALID | 3148
+|  BC  | 3.467       | -72.61 | VALID | 3136
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.490       | -89.54 | VALID | 2927
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.690       | -86.22 | VALID | 776
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=15,ms=48048,AB=9.358,BC=3.467,BD=nan,BE=nan,BF=nan,CD=14.490,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.690,AD=nan,AE=nan,AF=nan,rssi_AB=-82.90,rssi_BC=-72.61,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-89.54,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=15,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=15,CD=A,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 16 | NEXT: AB | TIME: 50405 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.942       | -87.78 | VALID | 2217
+|  BC  | 3.420       | -79.36 | VALID | 2205
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.570       | -86.93 | VALID | 2144
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.690       | -86.22 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=16,ms=50405,AB=8.942,BC=3.420,BD=nan,BE=nan,BF=nan,CD=14.570,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.690,AD=nan,AE=nan,AF=nan,rssi_AB=-87.78,rssi_BC=-79.36,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.93,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=16,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=16,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 17 | NEXT: AB | TIME: 53382 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.896       | -86.27 | VALID | 2837
+|  BC  | 3.385       | -75.75 | VALID | 2825
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.590       | -86.93 | VALID | 2764
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.93 | VALID | 658
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=17,ms=53382,AB=8.896,BC=3.385,BD=nan,BE=nan,BF=nan,CD=14.590,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-86.27,rssi_BC=-75.75,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.93,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.93,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=17,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=17,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 18 | NEXT: AB | TIME: 56575 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.823       | -84.76 | VALID | 3053
+|  BC  | 3.388       | -76.42 | VALID | 3041
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.650       | -86.44 | VALID | 2980
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.680       | -86.22 | VALID | 353
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=18,ms=56575,AB=8.823,BC=3.388,BD=nan,BE=nan,BF=nan,CD=14.650,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.680,AD=nan,AE=nan,AF=nan,rssi_AB=-84.76,rssi_BC=-76.42,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.44,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.22,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=18,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=18,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 19 | NEXT: AB | TIME: 59393 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.830       | -81.83 | VALID | 2678
+|  BC  | 3.400       | -76.07 | VALID | 2666
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.640       | -86.44 | VALID | 2605
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=19,ms=59393,AB=8.830,BC=3.400,BD=nan,BE=nan,BF=nan,CD=14.640,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-81.83,rssi_BC=-76.07,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.44,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x23,recovered_mask=0x0,last_scan_seq=19,last_measured_mask=0x23,last_no_response_mask=0x7FDC,last_recovered_mask=0x0
+GATEWAY,seq=19,CD=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 20 | NEXT: AB | TIME: 61905 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.590       | -83.21 | VALID | 2372
+|  BC  | 3.389       | -79.55 | VALID | 2360
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.660       | -87.47 | VALID | 2299
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=20,ms=61905,AB=9.590,BC=3.389,BD=nan,BE=nan,BF=nan,CD=14.660,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-83.21,rssi_BC=-79.55,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-87.47,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x23,recovered_mask=0x0,last_scan_seq=20,last_measured_mask=0x23,last_no_response_mask=0x7FDC,last_recovered_mask=0x0
+GATEWAY,seq=20,CD=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 21 | NEXT: AB | TIME: 64162 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.633       | -81.91 | VALID | 2117
+|  BC  | 3.341       | -80.66 | VALID | 2105
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.670       | -86.93 | VALID | 2044
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=21,ms=64162,AB=9.633,BC=3.341,BD=nan,BE=nan,BF=nan,CD=14.670,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-81.91,rssi_BC=-80.66,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.93,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x23,recovered_mask=0x0,last_scan_seq=21,last_measured_mask=0x23,last_no_response_mask=0x7FDC,last_recovered_mask=0x0
+GATEWAY,seq=21,CD=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 22 | NEXT: AB | TIME: 66419 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.407       | -82.80 | VALID | 2117
+|  BC  | 3.397       | -77.10 | VALID | 2105
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.880       | -93.08 | VALID | 2044
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=22,ms=66419,AB=9.407,BC=3.397,BD=nan,BE=nan,BF=nan,CD=14.880,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-82.80,rssi_BC=-77.10,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-93.08,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x23,recovered_mask=0x0,last_scan_seq=22,last_measured_mask=0x23,last_no_response_mask=0x7FDC,last_recovered_mask=0x0
+GATEWAY,seq=22,CD=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 23 | NEXT: AB | TIME: 68523 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.770       | -82.07 | VALID | 1964
+|  BC  | 3.412       | -79.99 | VALID | 1952
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | nan         | nan       | TIMEOUT | nan
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=23,ms=68523,AB=8.770,BC=3.412,BD=nan,BE=nan,BF=nan,CD=nan,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=-82.07,rssi_BC=-79.99,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=nan,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x3,recovered_mask=0x0,last_scan_seq=23,last_measured_mask=0x3,last_no_response_mask=0x7FFC,last_recovered_mask=0x0
+GATEWAY,seq=23
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 24 | NEXT: AB | TIME: 69856 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | nan         | nan       | TIMEOUT | nan
+|  BC  | 3.412       | -76.24 | VALID | 1179
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | nan         | nan       | TIMEOUT | nan
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | nan         | nan       | TIMEOUT | nan
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=24,ms=69856,AB=nan,BC=3.412,BD=nan,BE=nan,BF=nan,CD=nan,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=nan,AD=nan,AE=nan,AF=nan,rssi_AB=nan,rssi_BC=-76.24,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=nan,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=nan,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x2,recovered_mask=0x0,last_scan_seq=24,last_measured_mask=0x2,last_no_response_mask=0x7FFD,last_recovered_mask=0x0
+GATEWAY,seq=24
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 25 | NEXT: AB | TIME: 72631 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.114       | -86.53 | VALID | 2636
+|  BC  | 3.403       | -79.99 | VALID | 2624
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.680       | -90.12 | VALID | 2563
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.650       | -86.68 | VALID | 462
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=25,ms=72631,AB=9.114,BC=3.403,BD=nan,BE=nan,BF=nan,CD=14.680,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.650,AD=nan,AE=nan,AF=nan,rssi_AB=-86.53,rssi_BC=-79.99,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-90.12,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.68,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=25,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=25,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 26 | NEXT: AB | TIME: 75377 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.520       | -83.55 | VALID | 2606
+|  BC  | 3.486       | -75.04 | VALID | 2594
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | nan         | nan       | TIMEOUT | nan
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.670       | -86.44 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=26,ms=75377,AB=9.520,BC=3.486,BD=nan,BE=nan,BF=nan,CD=nan,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.670,AD=nan,AE=nan,AF=nan,rssi_AB=-83.55,rssi_BC=-75.04,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=nan,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x803,recovered_mask=0x0,last_scan_seq=26,last_measured_mask=0x803,last_no_response_mask=0x77FC,last_recovered_mask=0x0
+GATEWAY,seq=26,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 27 | NEXT: AB | TIME: 77737 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.279       | -84.61 | VALID | 2219
+|  BC  | 3.461       | -71.32 | VALID | 2207
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.610       | -86.68 | VALID | 2146
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.690       | -86.44 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=27,ms=77737,AB=9.279,BC=3.461,BD=nan,BE=nan,BF=nan,CD=14.610,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.690,AD=nan,AE=nan,AF=nan,rssi_AB=-84.61,rssi_BC=-71.32,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-86.68,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=27,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=27,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 28 | NEXT: AB | TIME: 80097 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 9.126       | -85.08 | VALID | 2219
+|  BC  | 3.499       | -71.92 | VALID | 2207
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.590       | -87.77 | VALID | 2146
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.700       | -86.68 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=28,ms=80097,AB=9.126,BC=3.499,BD=nan,BE=nan,BF=nan,CD=14.590,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.700,AD=nan,AE=nan,AF=nan,rssi_AB=-85.08,rssi_BC=-71.92,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-87.77,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.68,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=28,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=28,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 29 | NEXT: AB | TIME: 82567 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.728       | -82.24 | VALID | 2329
+|  BC  | 3.502       | -70.90 | VALID | 2317
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.460       | -88.57 | VALID | 2256
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.690       | -86.44 | VALID | 461
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=29,ms=82567,AB=8.728,BC=3.502,BD=nan,BE=nan,BF=nan,CD=14.460,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.690,AD=nan,AE=nan,AF=nan,rssi_AB=-82.24,rssi_BC=-70.90,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-88.57,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=29,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=29,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 30 | NEXT: AB | TIME: 85037 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.754       | -81.99 | VALID | 2329
+|  BC  | 3.480       | -69.99 | VALID | 2317
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.180       | -91.58 | VALID | 2256
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.680       | -86.44 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=30,ms=85037,AB=8.754,BC=3.480,BD=nan,BE=nan,BF=nan,CD=14.180,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.680,AD=nan,AE=nan,AF=nan,rssi_AB=-81.99,rssi_BC=-69.99,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-91.58,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=30,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=30,CD=C,AC=C
+
+=======================================================
+[UWB POLLING DISTANCE] SCAN: 31 | NEXT: AB | TIME: 87507 ms
+-------------------------------------------------------
+| PAIR | DISTANCE(m) | RSSI(dBm) | STATUS | AGE(ms) |
+-------------------------------------------------------
+|  AB  | 8.641       | -86.01 | VALID | 2329
+|  BC  | 3.401       | -72.18 | VALID | 2317
+|  BD  | nan         | nan       | TIMEOUT | nan
+|  BE  | nan         | nan       | TIMEOUT | nan
+|  BF  | nan         | nan       | TIMEOUT | nan
+|  CD  | 14.480       | -90.12 | VALID | 2256
+|  DE  | nan         | nan       | TIMEOUT | nan
+|  EF  | nan         | nan       | TIMEOUT | nan
+|  CE  | nan         | nan       | TIMEOUT | nan
+|  CF  | nan         | nan       | TIMEOUT | nan
+|  DF  | nan         | nan       | TIMEOUT | nan
+|  AC  | 9.650       | -86.44 | VALID | 351
+|  AD  | nan         | nan       | TIMEOUT | nan
+|  AE  | nan         | nan       | TIMEOUT | nan
+|  AF  | nan         | nan       | TIMEOUT | nan
+=======================================================
+Original_DIST,seq=31,ms=87507,AB=8.641,BC=3.401,BD=nan,BE=nan,BF=nan,CD=14.480,DE=nan,EF=nan,CE=nan,CF=nan,DF=nan,AC=9.650,AD=nan,AE=nan,AF=nan,rssi_AB=-86.01,rssi_BC=-72.18,rssi_BD=nan,rssi_BE=nan,rssi_BF=nan,rssi_CD=-90.12,rssi_DE=nan,rssi_EF=nan,rssi_CE=nan,rssi_CF=nan,rssi_DF=nan,rssi_AC=-86.44,rssi_AD=nan,rssi_AE=nan,rssi_AF=nan,fresh_mask=0x823,recovered_mask=0x0,last_scan_seq=31,last_measured_mask=0x823,last_no_response_mask=0x77DC,last_recovered_mask=0x0
+GATEWAY,seq=31,CD=C,AC=C

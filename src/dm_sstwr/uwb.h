@@ -109,6 +109,12 @@
 #define MSG_FP_POWER_CDBM_IDX 26
 #define MSG_REQUEST_ID_IDX 28
 #define MSG_MEASURER_UID_IDX 29
+#define MSG_CIR_FP_INDEX_IDX 30
+#define MSG_CIR_DATA_IDX 32
+#define CIR_SAMPLE_COUNT 4
+#define CIR_SAMPLE_BYTES 6
+#define CIR_DATA_BYTES (CIR_SAMPLE_COUNT * CIR_SAMPLE_BYTES)
+#define CIR_FP_INDEX_INVALID 0xFFFFU
 
 #define REPORT_STATUS_OK 0
 #define REPORT_STATUS_NO_RESPONSE 1
@@ -130,7 +136,13 @@
 #define PAIR_AE_INDEX 13
 
 #define ENABLE_DETERMINISTIC_WALL_RECOVERY 1
-#define COLLECTOR_PRINT_INTERVAL_MS 1000UL
+#define COLLECTOR_PRINT_INTERVAL_MS 1000UL // Legacy fixed-gateway variant only.
+// Dynamic gateway: maximum cycle budget, not a minimum print interval.
+// Reserve UART time for the table + Original_DIST + GATEWAY + CIR at 115200 baud.
+// Keep the radio scan budget at 750 ms after adding the CIR output.
+#define COLLECTOR_MAX_CYCLE_MS 1050UL
+#define COLLECTOR_SERIAL_RESERVE_MS 300UL
+#define COLLECTOR_SCAN_BUDGET_MS (COLLECTOR_MAX_CYCLE_MS - COLLECTOR_SERIAL_RESERVE_MS)
 #define MAX_DISTANCE_AGE_MS 3000UL
 
 #define POLLING_PAIR_GAP_MS 10UL
